@@ -39,7 +39,7 @@ window.cj = {
      * @param hex
      * @returns {*}
      */
-    function hexToRgb(hex) {
+    function hexToRgba(hex) {
       var sColor = hex.toLowerCase();
       //十六进制颜色值的正则表达式
       var reg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/;
@@ -57,7 +57,7 @@ window.cj = {
         for (var i=1; i<7; i+=2) {
           sColorChange.push(parseInt("0x"+sColor.slice(i, i+2)));
         }
-        return "rgb(" + sColorChange.join(",") + ")";
+        return "rgba(" + sColorChange.join(",") + ", 1)";
       }
       return sColor;
     }
@@ -246,7 +246,7 @@ window.cj = {
       delete config.confirm;
       config.callback = 'afterDateSelect';
       if(config.color) {
-        config.color = hexToRgb(config.color);
+        config.color = hexToRgba(config.color);
       }
       CrawlerJS.datePicker(jsonToStr(config));
     };
@@ -265,7 +265,7 @@ window.cj = {
       delete config.confirm;
       config.callback = 'afterDateTimeSelect';
       if(config.color) {
-        config.color = hexToRgb(config.color);
+        config.color = hexToRgba(config.color);
       }
       CrawlerJS.datetimePicker(jsonToStr(config));
     };
@@ -284,7 +284,7 @@ window.cj = {
       delete config.confirm;
       config.callback = 'afterRegionSelect';
       if(config.color) {
-        config.color = hexToRgb(config.color);
+        config.color = hexToRgba(config.color);
       }
       CrawlerJS.regionPicker(jsonToStr(config));
     };
@@ -303,7 +303,7 @@ window.cj = {
       delete config.confirm;
       config.callback = 'afterPickerSelect';
       if(config.color) {
-        config.color = hexToRgb(config.color);
+        config.color = hexToRgba(config.color);
       }
       CrawlerJS.picker(jsonToStr(config));
     };
@@ -322,7 +322,7 @@ window.cj = {
       delete config.confirm;
       config.callback = 'afterLinkagePickerSelect';
       if(config.color) {
-        config.color = hexToRgb(config.color);
+        config.color = hexToRgba(config.color);
       }
       CrawlerJS.linkagePicker(jsonToStr(config));
     };
