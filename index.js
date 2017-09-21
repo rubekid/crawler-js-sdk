@@ -102,7 +102,7 @@ window.cj = {
      * 刷新Token
      */
     cj.refreshToken = function () {
-      CrawlerJS.refreshToken();
+      return CrawlerJS.refreshToken();
     };
 
     /**
