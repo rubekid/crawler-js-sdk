@@ -345,7 +345,7 @@ window.cj = {
       };
       delete config.success;
       config.callback = 'onLocationSuccess';
-      CrawlerJS.linkagePicker(jsonToStr(config));
+      CrawlerJS.getLocation(jsonToStr(config));
     };
 
     /**
