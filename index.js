@@ -35,30 +35,35 @@ window.cj = {
     }
 
     /**
-     * 16进制转rgb
-     * @param hex
+     * 转rgba
+     * @param value
      * @returns {*}
      */
-    function hexToRgba(hex) {
-      var sColor = hex.toLowerCase();
+    function toRgba(value) {
+      var sColor = value.toLowerCase().replace(/\s/g, '');
       //十六进制颜色值的正则表达式
-      var reg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/;
+      var hexReg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/;
+      var rgbReg = /^rgb\(\d+,\d+,\d+\)$/
       // 如果是16进制颜色
-      if (sColor && reg.test(sColor)) {
-        if (sColor.length === 4) {
-          var sColorNew = "#";
-          for (var i=1; i<4; i+=1) {
-            sColorNew += sColor.slice(i, i+1).concat(sColor.slice(i, i+1));
+      if (sColor && hexReg.test(sColor)) {
+          if (sColor.length === 4) {
+              var sColorNew = "#";
+              for (var i=1; i<4; i+=1) {
+                  sColorNew += sColor.slice(i, i+1).concat(sColor.slice(i, i+1));
+              }
+              sColor = sColorNew;
           }
-          sColor = sColorNew;
-        }
-        //处理六位的颜色值
-        var sColorChange = [];
-        for (var i=1; i<7; i+=2) {
-          sColorChange.push(parseInt("0x"+sColor.slice(i, i+2)));
-        }
-        return "rgba(" + sColorChange.join(",") + ", 1)";
+          //处理六位的颜色值
+          var sColorChange = [];
+          for (var i=1; i<7; i+=2) {
+              sColorChange.push(parseInt("0x"+sColor.slice(i, i+2)));
+          }
+          return "rgba(" + sColorChange.join(",") + ",1)";
       }
+      else  if (sColor && rgbReg.test(sColor)) {
+          return "rgba(" + sColor.replace('rgb(','').replace(')', '') + ",1)";
+      }
+
       return sColor;
     }
 
@@ -246,7 +251,7 @@ window.cj = {
       delete config.confirm;
       config.callback = 'afterDateSelect';
       if(config.color) {
-        config.color = hexToRgba(config.color);
+        config.color = toRgba(config.color);
       }
       CrawlerJS.datePicker(jsonToStr(config));
     };
@@ -265,7 +270,7 @@ window.cj = {
       delete config.confirm;
       config.callback = 'afterDateTimeSelect';
       if(config.color) {
-        config.color = hexToRgba(config.color);
+        config.color = toRgba(config.color);
       }
       CrawlerJS.datetimePicker(jsonToStr(config));
     };
@@ -284,7 +289,7 @@ window.cj = {
       delete config.confirm;
       config.callback = 'afterRegionSelect';
       if(config.color) {
-        config.color = hexToRgba(config.color);
+        config.color = toRgba(config.color);
       }
       CrawlerJS.regionPicker(jsonToStr(config));
     };
@@ -303,7 +308,7 @@ window.cj = {
       delete config.confirm;
       config.callback = 'afterPickerSelect';
       if(config.color) {
-        config.color = hexToRgba(config.color);
+        config.color = toRgba(config.color);
       }
       CrawlerJS.picker(jsonToStr(config));
     };
@@ -322,7 +327,7 @@ window.cj = {
       delete config.confirm;
       config.callback = 'afterLinkagePickerSelect';
       if(config.color) {
-        config.color = hexToRgba(config.color);
+        config.color = toRgba(config.color);
       }
       CrawlerJS.linkagePicker(jsonToStr(config));
     };
