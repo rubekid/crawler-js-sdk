@@ -83,8 +83,15 @@ window.cj = {
          * 登录
          */
 
-        cj.login = function () {
-            CrawlerJS.login();
+        cj.login = function (callback) {
+            window.afterLogin = function (responseText) {
+                callback(strToJson(responseText))
+            };
+
+            var config = {
+               callback: 'afterLogin'
+            };
+            CrawlerJS.login(jsonToStr(config));
         };
 
         /**
