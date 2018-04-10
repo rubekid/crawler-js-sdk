@@ -2,8 +2,8 @@ window.cj = {
     support: false // 是否支持自定义
 };
 (function () {
-    if (window && window.CrawlerJS) {
-        var CrawlerJS = window.CrawlerJS;
+    if (window && (window.CrawlerJS || window.WebAppJS)) {
+        var CrawlerJS = window.CrawlerJS || window.WebAppJS;
         var cj = {
             support: true
         };
@@ -135,8 +135,9 @@ window.cj = {
             var errorCallback = config.error || function () {
                 console.log('share error');
             }
-            window.afterShare = function (success) {
-                if (toBoolean(success)) {
+            window.afterShare = function (responseText) {
+                var response = strToJson(responseText);
+                if (toBoolean(response.success) || toBoolean(responseText)) {
                     successCallback()
                 }
                 else {
@@ -160,8 +161,9 @@ window.cj = {
             var errorCallback = config.error || function () {
                 console.log('share error');
             }
-            window.afterShare = function (success) {
-                if (toBoolean(success)) {
+            window.afterShare = function (responseText) {
+                var response = strToJson(responseText);
+                if (toBoolean(response.success) || toBoolean(responseText)) {
                     successCallback()
                 }
                 else {
@@ -185,8 +187,9 @@ window.cj = {
             var errorCallback = config.error || function () {
                 console.log('pay error');
             }
-            window.afterPay = function (success) {
-                if (toBoolean(success)) {
+            window.afterPay = function (responseText) {
+                var response = strToJson(responseText);
+                if (toBoolean(response.success) || toBoolean(responseText)) {
                     successCallback()
                 }
                 else {
@@ -210,8 +213,9 @@ window.cj = {
             var errorCallback = config.error || function () {
                 console.log('pay error');
             }
-            window.afterPay = function (success) {
-                if (toBoolean(success)) {
+            window.afterPay = function (responseText) {
+                var response = strToJson(responseText);
+                if (toBoolean(response.success) || toBoolean(responseText)) {
                     successCallback()
                 }
                 else {
@@ -404,8 +408,9 @@ window.cj = {
             var errorCallback = config.error || function () {
                 console.log('setClipboardData error');
             }
-            window.afterSetClipboardData = function (success) {
-                if (toBoolean(success)) {
+            window.afterSetClipboardData = function (responseText) {
+                var response = strToJson(responseText);
+                if (toBoolean(response.success) || toBoolean(responseText)) {
                     successCallback();
                 }
                 else {
@@ -430,7 +435,7 @@ window.cj = {
                 console.log('setClipboardData error');
             }
 
-            window.afterGetClipboardData = function (success) {
+            window.afterGetClipboardData = function (responseText) {
                 var response = strToJson(responseText);
                 if (response.success) {
                     successCallback(response.text);
@@ -451,6 +456,40 @@ window.cj = {
          */
         cj.makePhoneCall = function (config) {
             CrawlerJS.makePhoneCall(jsonToStr(config));
+        };
+
+        /**
+         * 统计未读消息数量
+         * @param config
+         */
+        cj.countUnreadMessage = function(config){
+            var successCallback = config.success || function () {
+                console.log('countUnreadMessage success');
+            }
+
+            window.afterCountUnreadMessage = function (responseText) {
+                var response = strToJson(responseText);
+                if (response.success) {
+                    successCallback(response.value);
+                }
+            };
+            delete config.success;
+            config.callback = 'afterCountUnreadMessage';
+            CrawlerJS.countUnreadMessage(jsonToStr(config));
+        };
+
+        /**
+         * 跳转到消息管理
+         */
+        cj.navigateToMessage = function(){
+            CrawlerJS.navigateToMessage();
+        };
+
+        /**
+         * 跳转到消息管理
+         */
+        cj.navigateToActivity = function(config){
+            CrawlerJS.navigateToMessage(jsonToStr(config));
         };
 
         /**
