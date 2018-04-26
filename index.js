@@ -486,10 +486,26 @@ window.cj = {
         };
 
         /**
-         * 跳转到消息管理
+         * 跳转到原生界面
          */
         cj.navigateToActivity = function(config){
             CrawlerJS.navigateToMessage(jsonToStr(config));
+        };
+
+        /**
+         * 设置状态栏
+         */
+        cj.setStatusBar = function(config){
+            if(config.color){
+                if(typeof config.color == 'string'){
+                    var color = config.color;
+                    config.color = {
+                        from: color,
+                        to: color
+                    }
+                }
+            }
+            CrawlerJS.setStatusBar(jsonToStr(config));
         };
 
         /**
