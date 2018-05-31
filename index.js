@@ -489,7 +489,7 @@ window.cj = {
          * 跳转到原生界面
          */
         cj.navigateToActivity = function(config){
-            CrawlerJS.navigateToMessage(jsonToStr(config));
+            CrawlerJS.navigateToActivity(jsonToStr(config));
         };
 
         /**
