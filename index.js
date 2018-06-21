@@ -1,5 +1,8 @@
 window.cj = {
-    support: false // 是否支持自定义
+    support: false, // 是否支持自定义
+    canUse: function(funcName){ // 方法是否可用
+        return false
+    }
 };
 (function () {
     if (window && (window.CrawlerJS || window.WebAppJS)) {
