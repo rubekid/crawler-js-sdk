@@ -3,7 +3,7 @@ window.cj = {
 };
 (function () {
     if (window && (window.CrawlerJS || window.WebAppJS)) {
-        var CrawlerJS = window.CrawlerJS || window.WebAppJS;
+        window.CrawlerJS = window.CrawlerJS || window.WebAppJS;
         var cj = {
             support: true
         };
@@ -522,6 +522,14 @@ window.cj = {
             CrawlerJS.exit();
         };
 
+        /**
+         * 是否可用
+         * @param funcName
+         * @returns {boolean}
+         */
+        cj.canUse = function(funcName){
+            return !!CrawlerJS[funcName]
+        }
         window.cj = cj;
     }
 })();
