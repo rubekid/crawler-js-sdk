@@ -11,6 +11,51 @@ window.cj = {
             support: true
         };
 
+
+        var ua = navigator.userAgent.toLowerCase();
+
+        // 是否使用 WkWebview
+        var useWkWebview = /wkwebview/.test(ua)
+            && window.webkit
+            && window.webkit.messageHandlers
+            && window.webkit.messageHandlers.CrawlerJSCall;
+
+        // 初始化 接口列表
+        var wkApiList = '';
+        if(useWkWebview){
+            CrawlerJsBridge("init", {
+                success: function(res){
+                    wkApiList = res;
+                    console.log(wkApiList);
+                }
+            })
+        }
+        /**
+         * 爬虫JS桥
+         * @param method
+         * @param cfg
+         * @constructor
+         */
+        function CrawlerJsBridge(method, cfg){
+            if(useWkWebview){
+                var message = {
+                    "method": method,
+                    "data": cfg
+                }
+                window.webkit.messageHandlers.CrawlerJSCall.postMessage(message);
+            }
+            else{
+                if(CrawlerJS[method]){
+                    if(cfg){
+                        CrawlerJS[method](jsonToStr(cfg));
+                    }
+                    else{
+                        CrawlerJS[method]();
+                    }
+                }
+            }
+        }
+
         /**
          * 转成JSON
          * @param str
@@ -85,46 +130,120 @@ window.cj = {
         /**
          * 登录
          */
+        cj.login = function (config) {
+            // 成功回调
+            var successCallback = config.success || function () {
+                console.log('login success');
+            }
 
-        cj.login = function (callback) {
-            window.afterLogin = function (responseText) {
-                callback(strToJson(responseText))
+            // 失败回调
+            var failCallbak = config.fail || function () {
+                console.log('login error');
+            }
+            window.afterLogin = function (resText) {
+                var res = strToJson(resText);
+                if (toBoolean(res.success)) {
+                    successCallback(res.data)
+                }
+                else {
+                    failCallbak(res.msg)
+                }
             };
-
-            var config = {
-               callback: 'afterLogin'
-            };
-            CrawlerJS.login(jsonToStr(config));
+            delete config.success;
+            delete config.fail;
+            config.callback = 'afterLogin';
+            CrawlerJsBridge('login', config);
         };
 
         /**
          * 登出
          */
         cj.logout = function () {
-            CrawlerJS.logout();
+            CrawlerJsBridge('logout');
         };
 
         /**
          * 获取登录数据
          */
-        cj.getLoginData = function () {
-            var response = CrawlerJS.getLoginData();
-            return strToJson(response);
+        cj.getLoginData = function (config) {
+            // 成功回调
+            var successCallback = config.success || function () {
+                console.log('get login data success');
+            }
+
+            // 失败回调
+            var failCallbak = config.fail || function () {
+                console.log('get login data error');
+            }
+            window.afterGetLoginData = function (resText) {
+                var res = strToJson(resText);
+                if (toBoolean(res.success)) {
+                    successCallback(res.data)
+                }
+                else {
+                    failCallbak(res.msg)
+                }
+            };
+            delete config.success;
+            delete config.fail;
+            config.callback = 'afterGetLoginData';
+            CrawlerJsBridge('getLoginData', config);
         };
 
         /**
          * 获取Token
          */
-        cj.getToken = function () {
-            var response = CrawlerJS.getToken();
-            return strToJson(response);
+        cj.getToken = function (config) {
+            // 成功回调
+            var successCallback = config.success || function () {
+                console.log('get token success');
+            }
+
+            // 失败回调
+            var failCallbak = config.fail || function () {
+                console.log('get token error');
+            }
+            window.afterGetToken = function (resText) {
+                var res = strToJson(resText);
+                if (toBoolean(res.success)) {
+                    successCallback(res.data)
+                }
+                else {
+                    failCallbak(res.msg)
+                }
+            };
+            delete config.success;
+            delete config.fail;
+            config.callback = 'afterGetToken';
+            CrawlerJsBridge('getToken', config);
         };
 
         /**
          * 刷新Token
          */
-        cj.refreshToken = function () {
-            return CrawlerJS.refreshToken();
+        cj.refreshToken = function (config) {
+            // 成功回调
+            var successCallback = config.success || function () {
+                console.log('refresh token success');
+            }
+
+            // 失败回调
+            var failCallbak = config.fail || function () {
+                console.log('refresh token error');
+            }
+            window.afterRefreshToken = function (resText) {
+                var res = strToJson(resText);
+                if (toBoolean(res.success)) {
+                    successCallback(res.data)
+                }
+                else {
+                    failCallbak(res.msg)
+                }
+            };
+            delete config.success;
+            delete config.fail;
+            config.callback = 'afterRefreshToken';
+            CrawlerJsBridge('refreshToken', config);
         };
 
         /**
@@ -132,25 +251,27 @@ window.cj = {
          * @param config
          */
         cj.chooseShare = function (config) {
+            // 成功回调
             var successCallback = config.success || function () {
                 console.log('share success');
             }
-            var errorCallback = config.error || function () {
+            // 失败回调
+            var failCallbak = config.fail || function () {
                 console.log('share error');
             }
-            window.afterShare = function (responseText) {
-                var response = strToJson(responseText);
-                if (toBoolean(response.success) || toBoolean(responseText)) {
+            window.afterChooseShare = function (resText) {
+                var response = strToJson(resText);
+                if (toBoolean(response.success)) {
                     successCallback()
                 }
                 else {
-                    errorCallback()
+                    failCallbak(res.msg)
                 }
             };
             delete config.success;
-            delete config.error;
-            config.callback = 'afterShare';
-            CrawlerJS.chooseShare(jsonToStr(config))
+            delete config.fail;
+            config.callback = 'afterChooseShare';
+            CrawlerJsBridge('chooseShare', config);
         }
 
         /**
@@ -158,25 +279,27 @@ window.cj = {
          * @param config
          */
         cj.share = function (config) {
+            // 成功回调
             var successCallback = config.success || function () {
                 console.log('share success');
             }
-            var errorCallback = config.error || function () {
+            // 失败回调
+            var failCallbak = config.fail || function () {
                 console.log('share error');
             }
-            window.afterShare = function (responseText) {
-                var response = strToJson(responseText);
-                if (toBoolean(response.success) || toBoolean(responseText)) {
+            window.afterShare = function (resText) {
+                var res = strToJson(resText);
+                if (toBoolean(res.success)) {
                     successCallback()
                 }
                 else {
-                    errorCallback()
+                    failCallbak(res.msg)
                 }
             };
             delete config.success;
-            delete config.error;
+            delete config.fail;
             config.callback = 'afterShare';
-            CrawlerJS.share(jsonToStr(config))
+            CrawlerJsBridge('share', config);
         };
 
         /**
@@ -184,25 +307,28 @@ window.cj = {
          * @param config
          */
         cj.choosePay = function (config) {
+            // 成功回调
             var successCallback = config.success || function () {
-                console.log('pay success');
+                console.log('choose pay success');
             }
-            var errorCallback = config.error || function () {
-                console.log('pay error');
+
+            // 失败回调
+            var failCallbak = config.fail || function () {
+                console.log('choose pay error');
             }
-            window.afterPay = function (responseText) {
-                var response = strToJson(responseText);
-                if (toBoolean(response.success) || toBoolean(responseText)) {
+            window.afterChoosePay = function (resText) {
+                var res = strToJson(resText);
+                if (toBoolean(res.success)) {
                     successCallback()
                 }
                 else {
-                    errorCallback()
+                    failCallbak(res.msg)
                 }
             };
             delete config.success;
-            delete config.error;
-            config.callback = 'afterPay';
-            CrawlerJS.choosePay(jsonToStr(config));
+            delete config.fail;
+            config.callback = 'afterChoosePay';
+            CrawlerJsBridge('choosePay', config);
         };
 
         /**
@@ -210,25 +336,27 @@ window.cj = {
          * @param config
          */
         cj.pay = function (config) {
+            // 成功回调
             var successCallback = config.success || function () {
                 console.log('pay success');
             }
-            var errorCallback = config.error || function () {
+            // 失败回调
+            var failCallbak = config.fail || function () {
                 console.log('pay error');
             }
-            window.afterPay = function (responseText) {
-                var response = strToJson(responseText);
-                if (toBoolean(response.success) || toBoolean(responseText)) {
+            window.afterPay = function (resText) {
+                var res = strToJson(resText);
+                if (toBoolean(res.success)) {
                     successCallback()
                 }
                 else {
-                    errorCallback()
+                    failCallbak(res.msg)
                 }
             };
             delete config.success;
-            delete config.error;
+            delete config.fail;
             config.callback = 'afterPay';
-            CrawlerJS.pay(jsonToStr(config));
+            CrawlerJsBridge('pay', config);
         };
 
         /**
@@ -236,15 +364,29 @@ window.cj = {
          * @param config
          */
         cj.chooseUpload = function (config) {
+            // 成功回调
             var successCallback = config.success || function () {
                 console.log('upload success');
             }
-            window.afterUpload = function (responseText) {
-                successCallback(strToJson(responseText))
+
+            // 失败回调
+            var failCallbak = config.fail || function () {
+                console.log('upload error');
+            }
+
+            window.afterUpload = function (resText) {
+                var res = strToJson(resText);
+                if (toBoolean(res.success)) {
+                    successCallback(res.data)
+                }
+                else {
+                    failCallbak(res.msg)
+                }
             };
             delete config.success;
+            delete config.fail;
             config.callback = 'afterUpload';
-            CrawlerJS.chooseUpload(jsonToStr(config));
+            CrawlerJsBridge('chooseUpload', config);
         }
 
         /**
@@ -252,15 +394,30 @@ window.cj = {
          * @param config
          */
         cj.chooseFile = function (config) {
+            // 成功回调
             var successCallback = config.success || function () {
-                console.log('choose success');
+                console.log('choose file success');
             }
-            window.afterChooseFile = function (responseText) {
-                successCallback(strToJson(responseText))
+
+            // 失败回调
+            var failCallbak = config.fail || function () {
+                console.log('choose file error');
+            }
+
+            window.afterChooseFile = function (resText) {
+                var res = strToJson(resText);
+                if (toBoolean(res.success)) {
+                    successCallback(res.data)
+                }
+                else {
+                    failCallbak(res.msg)
+                }
             };
             delete config.success;
+            delete config.fail;
             config.callback = 'afterChooseFile';
-            CrawlerJS.chooseFile(jsonToStr(config));
+
+            CrawlerJsBridge('chooseFile', config);
         };
 
         /**
@@ -271,15 +428,20 @@ window.cj = {
             var confirmCallback = config.confirm || function () {
                 console.log('after datetime select');
             }
-            window.afterDateSelect = function (responseText) {
-                confirmCallback(strToJson(responseText))
+
+            window.afterDateSelect = function (resText) {
+                var res = strToJson(resText);
+                if (toBoolean(res.success)) {
+                    confirmCallback(res.data)
+                }
             };
+
             delete config.confirm;
             config.callback = 'afterDateSelect';
             if (config.color) {
                 config.color = toRgba(config.color);
             }
-            CrawlerJS.datePicker(jsonToStr(config));
+            CrawlerJsBridge('datePicker', config);
         };
 
         /**
@@ -290,15 +452,19 @@ window.cj = {
             var confirmCallback = config.confirm || function () {
                 console.log('after datetime select');
             }
-            window.afterDateTimeSelect = function (responseText) {
-                confirmCallback(strToJson(responseText))
+            window.afterDateTimeSelect = function (resText) {
+                var res = strToJson(resText);
+                if (toBoolean(res.success)) {
+                    confirmCallback(res.data)
+                }
             };
+
             delete config.confirm;
             config.callback = 'afterDateTimeSelect';
             if (config.color) {
                 config.color = toRgba(config.color);
             }
-            CrawlerJS.datetimePicker(jsonToStr(config));
+            CrawlerJsBridge('datetimePicker', config);
         };
 
         /**
@@ -309,15 +475,19 @@ window.cj = {
             var confirmCallback = config.confirm || function () {
                 console.log('after datetime select');
             }
-            window.afterRegionSelect = function (responseText) {
-                confirmCallback(strToJson(responseText))
+            window.afterRegionSelect = function (resText) {
+                var res = strToJson(resText);
+                if (toBoolean(res.success)) {
+                    confirmCallback(res.data)
+                }
             };
+
             delete config.confirm;
             config.callback = 'afterRegionSelect';
             if (config.color) {
                 config.color = toRgba(config.color);
             }
-            CrawlerJS.regionPicker(jsonToStr(config));
+            CrawlerJsBridge('regionPicker', config);
         };
 
         /**
@@ -328,15 +498,18 @@ window.cj = {
             var confirmCallback = config.confirm || function () {
                 console.log('after picker select');
             }
-            window.afterPickerSelect = function (responseText) {
-                confirmCallback(strToJson(responseText))
+            window.afterPickerSelect = function (resText) {
+                var res = strToJson(resText);
+                if (toBoolean(res.success)) {
+                    confirmCallback(res.data)
+                }
             };
             delete config.confirm;
             config.callback = 'afterPickerSelect';
             if (config.color) {
                 config.color = toRgba(config.color);
             }
-            CrawlerJS.picker(jsonToStr(config));
+            CrawlerJsBridge('picker', config);
         };
 
         /**
@@ -347,15 +520,18 @@ window.cj = {
             var confirmCallback = config.confirm || function () {
                 console.log('after linkage select');
             }
-            window.afterLinkagePickerSelect = function (responseText) {
-                confirmCallback(strToJson(responseText))
+            window.afterLinkagePickerSelect = function (resText) {
+                var res = strToJson(resText);
+                if (toBoolean(res.success)) {
+                    confirmCallback(res.data)
+                }
             };
             delete config.confirm;
             config.callback = 'afterLinkagePickerSelect';
             if (config.color) {
                 config.color = toRgba(config.color);
             }
-            CrawlerJS.linkagePicker(jsonToStr(config));
+            CrawlerJsBridge('linkagePicker', config);
         };
 
         /**
@@ -366,12 +542,25 @@ window.cj = {
             var successCallback = config.success || function () {
                 console.log('location success');
             }
-            window.onLocationSuccess = function (responseText) {
-                successCallback(strToJson(responseText))
+            // 失败回调
+            var failCallbak = config.fail || function () {
+                console.log('location error');
+            }
+
+            window.afterGetLocation = function (resText) {
+                var res = strToJson(resText);
+                if (toBoolean(res.success)) {
+                    successCallback(res.data)
+                }
+                else {
+                    failCallbak(res.msg)
+                }
             };
+
             delete config.success;
-            config.callback = 'onLocationSuccess';
-            CrawlerJS.getLocation(jsonToStr(config));
+            delete config.fail;
+            config.callback = 'afterGetLocation';
+            CrawlerJsBridge('getLocation', config);
         };
 
         /**
@@ -382,22 +571,22 @@ window.cj = {
             var successCallback = config.success || function () {
                 console.log('pay success');
             }
-            var errorCallback = config.error || function () {
+            var failCallbak = config.fail || function () {
                 console.log('pay error');
             }
-            window.afterScan = function (responseText) {
-                var response = strToJson(responseText);
-                if (response.success) {
-                    successCallback(response.text);
+            window.afterScan = function (resText) {
+                var res = strToJson(resText);
+                if (toBoolean(res.success)) {
+                    successCallback(res.data);
                 }
                 else {
-                    errorCallback();
+                    failCallbak(res.msg);
                 }
             };
             delete config.success;
-            delete config.error;
+            delete config.fail;
             config.callback = 'afterScan';
-            CrawlerJS.scanQRCode(jsonToStr(config));
+            CrawlerJsBridge('scanQRCode', config);
         };
 
         /**
@@ -408,22 +597,22 @@ window.cj = {
             var successCallback = config.success || function () {
                 console.log('setClipboardData success');
             }
-            var errorCallback = config.error || function () {
+            var failCallbak = config.fail || function () {
                 console.log('setClipboardData error');
             }
-            window.afterSetClipboardData = function (responseText) {
-                var response = strToJson(responseText);
-                if (toBoolean(response.success) || toBoolean(responseText)) {
+            window.afterSetClipboardData = function (resText) {
+                var res = strToJson(resText);
+                if (toBoolean(res.success)) {
                     successCallback();
                 }
                 else {
-                    errorCallback();
+                    failCallbak(res.msg);
                 }
             };
             delete config.success;
-            delete config.error;
+            delete config.fail;
             config.callback = 'afterSetClipboardData';
-            CrawlerJS.setClipboardData(jsonToStr(config));
+            CrawlerJsBridge('setClipboardData', config);
         };
 
         /**
@@ -434,23 +623,23 @@ window.cj = {
             var successCallback = config.success || function () {
                 console.log('setClipboardData success');
             }
-            var errorCallback = config.error || function () {
+            var failCallbak = config.fail || function () {
                 console.log('setClipboardData error');
             }
 
-            window.afterGetClipboardData = function (responseText) {
-                var response = strToJson(responseText);
-                if (response.success) {
-                    successCallback(response.text);
+            window.afterGetClipboardData = function (resText) {
+                var res = strToJson(resText);
+                if (res.success) {
+                    successCallback(res.data);
                 }
                 else {
-                    errorCallback();
+                    failCallbak(res.msg);
                 }
             };
             delete config.success;
-            delete config.error;
+            delete config.fail;
             config.callback = 'afterGetClipboardData';
-            CrawlerJS.getClipboardData(jsonToStr(config));
+            CrawlerJsBridge('getClipboardData', config);
         };
 
         /**
@@ -458,7 +647,7 @@ window.cj = {
          * @param config
          */
         cj.makePhoneCall = function (config) {
-            CrawlerJS.makePhoneCall(jsonToStr(config));
+            CrawlerJsBridge('makePhoneCall', config);
         };
 
         /**
@@ -470,29 +659,29 @@ window.cj = {
                 console.log('countUnreadMessage success');
             }
 
-            window.afterCountUnreadMessage = function (responseText) {
-                var response = strToJson(responseText);
-                if (response.success) {
-                    successCallback(response.value);
+            window.afterCountUnreadMessage = function (resText) {
+                var res = strToJson(resText);
+                if (res.success) {
+                    successCallback(res.data);
                 }
             };
             delete config.success;
             config.callback = 'afterCountUnreadMessage';
-            CrawlerJS.countUnreadMessage(jsonToStr(config));
+            CrawlerJsBridge('countUnreadMessage', config);
         };
 
         /**
          * 跳转到消息管理
          */
         cj.navigateToMessage = function(){
-            CrawlerJS.navigateToMessage();
+            CrawlerJsBridge('navigateToMessage');
         };
 
         /**
          * 跳转到原生界面
          */
         cj.navigateToActivity = function(config){
-            CrawlerJS.navigateToActivity(jsonToStr(config));
+            CrawlerJsBridge('navigateToActivity', config);
         };
 
         /**
@@ -508,21 +697,21 @@ window.cj = {
                     }
                 }
             }
-            CrawlerJS.setStatusBar(jsonToStr(config));
+            CrawlerJsBridge('setStatusBar', config);
         };
 
         /**
          * 回退
          */
         cj.back = function () {
-            CrawlerJS.back();
+            CrawlerJsBridge('back');
         };
 
         /**
          * 退出APP
          */
         cj.exit = function () {
-            CrawlerJS.exit();
+            CrawlerJsBridge('exit');
         };
 
         /**
@@ -531,6 +720,9 @@ window.cj = {
          * @returns {boolean}
          */
         cj.canUse = function(funcName){
+            if(useWkWebview){
+                return wkApiList.indexOf(funcName) > -1;
+            }
             return !!CrawlerJS[funcName]
         }
         window.cj = cj;
