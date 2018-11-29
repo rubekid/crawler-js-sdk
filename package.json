@@ -1,6 +1,6 @@
 {
   "name": "crawler-js-sdk",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "Crawler webview javascript interface",
   "main": "index.js",
   "scripts": {

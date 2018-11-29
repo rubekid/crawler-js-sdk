@@ -47,13 +47,14 @@ window.cj = {
             else{
                 if(CrawlerJS[method]){
                     if(cfg){
-                        CrawlerJS[method](jsonToStr(cfg));
+                        return CrawlerJS[method](jsonToStr(cfg));
                     }
                     else{
-                        CrawlerJS[method]();
+                        return CrawlerJS[method]();
                     }
                 }
             }
+            return null;
         }
 
         /**
@@ -141,13 +142,19 @@ window.cj = {
                 console.log('login error');
             }
             window.afterLogin = function (resText) {
-                var res = strToJson(resText);
-                if (toBoolean(res.success)) {
-                    successCallback(res.data)
+                if(typeof resText === 'undefined'){
+                    successCallback();
                 }
-                else {
-                    failCallbak(res.msg)
+                else{
+                    var res = strToJson(resText);
+                    if (toBoolean(res.success)) {
+                        successCallback(res.data)
+                    }
+                    else {
+                        failCallbak(res.msg)
+                    }
                 }
+
             };
             delete config.success;
             delete config.fail;
@@ -194,6 +201,12 @@ window.cj = {
          * 获取Token
          */
         cj.getToken = function (config) {
+            // 同步返回
+            if(typeof config === 'undefined'){
+                return CrawlerJsBridge('getToken');
+            }
+
+            /*** 异步返回 ***/
             // 成功回调
             var successCallback = config.success || function () {
                 console.log('get token success');
