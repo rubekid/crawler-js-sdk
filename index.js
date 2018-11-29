@@ -203,7 +203,8 @@ window.cj = {
         cj.getToken = function (config) {
             // 同步返回
             if(typeof config === 'undefined'){
-                return CrawlerJsBridge('getToken');
+                var resText = CrawlerJsBridge('getToken');
+                return strToJson(resText);
             }
 
             /*** 异步返回 ***/
