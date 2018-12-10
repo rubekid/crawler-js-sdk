@@ -715,6 +715,25 @@ window.cj = {
         };
 
         /**
+         * 屏幕横竖切换
+         */
+        cj.switchOrientation = function(config){
+            var successCallback = config.success || function () {
+                console.log('switchOrientation success');
+            }
+
+            window.afterSwitchOrientation = function (resText) {
+                var res = strToJson(resText);
+                if (res.success) {
+                    successCallback();
+                }
+            };
+            delete config.success;
+            config.callback = 'afterSwitchOrientation';
+            CrawlerJsBridge('switchOrientation', config);
+        };
+
+        /**
          * 回退
          */
         cj.back = function () {
