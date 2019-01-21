@@ -58,6 +58,35 @@ window.cj = {
         }
 
         /**
+         *  执行方法
+         * @param method
+         * @param config
+         */
+        function handler(method, config ) {
+            var successCallback = config.success || function () {
+                console.log(method + ' success');
+            }
+            var failCallbak = config.fail || function () {
+                console.log(method + ' error');
+            }
+            var callbackKey = 'after' + method.substring(0, 1).toUpperCase() + str.substring(1)
+            window[callbackKey] = function (resText) {
+                var res = strToJson(resText);
+                if (toBoolean(res.success)) {
+                    successCallback(res.data);
+                }
+                else {
+                    failCallbak(res.msg);
+                }
+            };
+            delete config.success;
+            delete config.fail;
+            config.callback = callbackKey;
+
+            CrawlerJsBridge(method, config);
+        };
+
+        /**
          * 转成JSON
          * @param str
          * @returns {null}
@@ -583,15 +612,15 @@ window.cj = {
          */
         cj.scanQRCode = function (config) {
             var successCallback = config.success || function () {
-                console.log('pay success');
+                console.log('scanQRcode success');
             }
             var failCallbak = config.fail || function () {
-                console.log('pay error');
+                console.log('scanQRcode error');
             }
             window.afterScan = function (resText) {
                 var res = strToJson(resText);
                 if (toBoolean(res.success)) {
-                    successCallback(res.data);
+                    successCallback(res.text || res.data);
                 }
                 else {
                     failCallbak(res.msg);
@@ -669,19 +698,15 @@ window.cj = {
          * @param config
          */
         cj.countUnreadMessage = function(config){
-            var successCallback = config.success || function () {
-                console.log('countUnreadMessage success');
-            }
+            handler('countUnreadMessage', config);
+        };
 
-            window.afterCountUnreadMessage = function (resText) {
-                var res = strToJson(resText);
-                if (res.success) {
-                    successCallback(res.data);
-                }
-            };
-            delete config.success;
-            config.callback = 'afterCountUnreadMessage';
-            CrawlerJsBridge('countUnreadMessage', config);
+        /**
+         * 获取消息列表
+         * @param config
+         */
+        cj.getMsgList = function(config) {
+            handler('getMsgList', config);
         };
 
         /**
@@ -736,15 +761,29 @@ window.cj = {
         /**
          * 回退
          */
-        cj.back = function () {
-            CrawlerJsBridge('back');
+        cj.back = function (config) {
+            CrawlerJsBridge('back', config);
         };
 
         /**
          * 退出APP
          */
-        cj.exit = function () {
-            CrawlerJsBridge('exit');
+        cj.exit = function ( config ) {
+           handler('exit', config);
+        };
+
+        /**
+         * 登出
+         */
+        cj.logout = function ( config ) {
+           handler('logout', config);
+        };
+
+        /**
+         * 清除缓存
+         */
+        cj.clear = function (config) {
+            handler('clear', config);
         };
 
         /**
