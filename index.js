@@ -69,7 +69,7 @@ window.cj = {
             var failCallbak = config.fail || function () {
                 console.log(method + ' error');
             }
-            var callbackKey = 'after' + method.substring(0, 1).toUpperCase() + str.substring(1)
+            var callbackKey = 'after' + method.substring(0, 1).toUpperCase() + method.substring(1)
             window[callbackKey] = function (resText) {
                 var res = strToJson(resText);
                 if (toBoolean(res.success)) {
@@ -191,12 +191,6 @@ window.cj = {
             CrawlerJsBridge('login', config);
         };
 
-        /**
-         * 登出
-         */
-        cj.logout = function () {
-            CrawlerJsBridge('logout');
-        };
 
         /**
          * 获取登录数据
