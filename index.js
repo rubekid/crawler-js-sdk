@@ -704,6 +704,29 @@ window.cj = {
         };
 
         /**
+         * 阅读消息
+         * @param config
+         */
+        cj.readMsg = function(config) {
+            handler('readMsg', config);
+        };
+
+        /**
+         * 阅读消息
+         * @param config
+         */
+        cj.readMsg = function(config) {
+            handler('readMsg', config);
+        };
+        /**
+         *  移除消息
+         * @param config
+         */
+        cj.removeMsg = function(config) {
+            handler('removeMsg', config);
+        };
+
+        /**
          * 跳转到消息管理
          */
         cj.navigateToMessage = function(){
@@ -715,6 +738,14 @@ window.cj = {
          */
         cj.navigateToActivity = function(config){
             CrawlerJsBridge('navigateToActivity', config);
+        };
+
+        /**
+         * 打开新webview
+         * @param url
+         */
+        cj.open = function(config) {
+            CrawlerJsBridge('open', config);
         };
 
         /**
