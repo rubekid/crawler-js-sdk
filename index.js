@@ -63,26 +63,27 @@ window.cj = {
          * @param config
          */
         function handler(method, config ) {
-            var successCallback = config.success || function () {
-                console.log(method + ' success');
-            }
-            var failCallbak = config.fail || function () {
-                console.log(method + ' error');
-            }
-            var callbackKey = 'after' + method.substring(0, 1).toUpperCase() + method.substring(1)
-            window[callbackKey] = function (resText) {
-                var res = strToJson(resText);
-                if (toBoolean(res.success)) {
-                    successCallback(res.data);
+            if (config) {
+                var successCallback = config.success || function () {
+                    console.log(method + ' success');
                 }
-                else {
-                    failCallbak(res.msg);
+                var failCallbak = config.fail || function () {
+                    console.log(method + ' error');
                 }
-            };
-            delete config.success;
-            delete config.fail;
-            config.callback = callbackKey;
-
+                var callbackKey = 'after' + method.substring(0, 1).toUpperCase() + method.substring(1)
+                window[callbackKey] = function (resText) {
+                    var res = strToJson(resText);
+                    if (toBoolean(res.success)) {
+                        successCallback(res.data);
+                    }
+                    else {
+                        failCallbak(res.msg);
+                    }
+                };
+                delete config.success;
+                delete config.fail;
+                config.callback = callbackKey;
+            }
             CrawlerJsBridge(method, config);
         };
 
