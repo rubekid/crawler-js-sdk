@@ -713,12 +713,13 @@ window.cj = {
         };
 
         /**
-         * 阅读消息
+         * 更新消息
          * @param config
          */
-        cj.readMsg = function(config) {
-            handler('readMsg', config);
+        cj.updateMsg = function(config) {
+            handler('updateMsg', config);
         };
+
         /**
          *  移除消息
          * @param config
