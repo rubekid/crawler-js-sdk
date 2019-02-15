@@ -99,12 +99,15 @@ window.cj = {
             if (!str) {
                 return null;
             }
-            try {
-                return JSON.parse(str);
+            if (typeof str === 'string'){
+                try {
+                    return JSON.parse(str);
+                }
+                catch (e) {
+                    log('strToJson:' + str)
+                }
             }
-            catch (e) {
-                log('strToJson:' + str)
-            }
+
             return str;
         }
 
