@@ -11,6 +11,9 @@ window.cj = {
             support: true
         };
 
+        // 打印日志
+        var log = window.debug || window.console.log
+
 
         var ua = navigator.userAgent.toLowerCase();
 
@@ -100,7 +103,7 @@ window.cj = {
                 return JSON.parse(str);
             }
             catch (e) {
-                console.log(e)
+                log(str, e)
             }
             return str;
         }
