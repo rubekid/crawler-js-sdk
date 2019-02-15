@@ -685,7 +685,7 @@ window.cj = {
          * @param config
          */
         cj.makePhoneCall = function (config) {
-            CrawlerJsBridge('makePhoneCall', config);
+            handler('makePhoneCall', config);
         };
 
         /**
@@ -732,14 +732,14 @@ window.cj = {
          * 跳转到消息管理
          */
         cj.navigateToMessage = function(){
-            CrawlerJsBridge('navigateToMessage');
+            handler('navigateToMessage');
         };
 
         /**
          * 跳转到原生界面
          */
         cj.navigateToActivity = function(config){
-            CrawlerJsBridge('navigateToActivity', config);
+            handler('navigateToActivity', config);
         };
 
         /**
@@ -747,8 +747,16 @@ window.cj = {
          * @param url
          */
         cj.open = function(config) {
-            CrawlerJsBridge('open', config);
+            handler('open', config);
         };
+
+        /**
+         * 聊天
+         * @param config
+         */
+        cj.chat = function(config) {
+            handler('chat', config);
+        }
 
         /**
          * 设置状态栏
@@ -789,7 +797,7 @@ window.cj = {
          * 回退
          */
         cj.back = function (config) {
-            CrawlerJsBridge('back', config);
+            handler('back', config);
         };
 
         /**
@@ -812,6 +820,15 @@ window.cj = {
         cj.clear = function (config) {
             handler('clear', config);
         };
+
+        /**
+         * 唤起方法
+         * @param func
+         * @param config
+         */
+        cj.call = function (func, config) {
+            handler(func, config)
+        }
 
         /**
          * 是否可用
