@@ -103,7 +103,7 @@ window.cj = {
                 return JSON.parse(str);
             }
             catch (e) {
-                log(str, e)
+                log('strToJson:' + str)
             }
             return str;
         }
