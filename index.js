@@ -828,6 +828,14 @@ window.cj = {
         };
 
         /**
+         * 保存到相册
+         * @param config
+         */
+        cj.saveImageToPhotosAlbum = function (config) {
+            handler('saveImageToPhotosAlbum', config)
+        };
+
+        /**
          * 唤起方法
          * @param func
          * @param config
